@@ -1,7 +1,8 @@
 # 🐳 Laravel Base Image (PHP 8.4 + Node 20)
 
 ![Build Status](https://img.shields.io/github/actions/workflow/status/akunnyaanam/laravel-base-image/build-push.yml?branch=main)
-![Size](https://img.shields.io/docker/image-size/ghcr.io/akunnyaanam/laravel-base-image/latest)
+![License](https://img.shields.io/github/license/akunnyaanam/laravel-base-image)
+![Release](https://img.shields.io/github/v/release/akunnyaanam/laravel-base-image?include_prereleases)
 
 A highly optimized, production-ready Docker base image designed for **Laravel applications**.
 Built on top of **Debian Bookworm Slim** (Glibc) to ensure maximum compatibility with PHP extensions and Node.js libraries while keeping the image size reasonable.
