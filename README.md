@@ -4,8 +4,8 @@
 ![License](https://img.shields.io/github/license/akunnyaanam/laravel-base-image)
 ![Release](https://img.shields.io/github/v/release/akunnyaanam/laravel-base-image?include_prereleases)
 
-A highly optimized, production-ready Docker base image designed for **Laravel applications**.
-Built on top of **Debian Bookworm** (Glibc) to ensure maximum compatibility with PHP extensions while keeping the image size reasonable.
+A highly optimized, lightweight, production-ready Docker base image designed for **Laravel applications**.
+Built on top of **Alpine Linux** to ensure minimal image size while maintaining compatibility with PHP extensions through musl libc.
 
 This image is intended to be used as a parent image (`FROM`) to speed up deployment pipelines for Laravel projects.
 
@@ -15,10 +15,11 @@ This image comes pre-installed with the standard stack required for modern Larav
 
 ### 🛠 System Foundation
 
-- **OS:** Debian 12 (Bookworm)
-- **Base Image:** `php:8.4-fpm-bookworm`
+- **OS:** Alpine Linux (lightweight, security-focused)
+- **Base Image:** `php:8.4-fpm-alpine`
 - **Architecture:** `amd64` / `arm64` (Multi-arch ready)
-- **Library:** Glibc - Ensures compatibility with various PHP extensions
+- **C Library:** musl libc - Minimal footprint with excellent PHP extension support
+- **Image Size:** Significantly smaller than Debian-based alternatives
 - **Timezone:** UTC (Configurable via your application)
 
 ### 🐘 PHP Environment
@@ -26,15 +27,15 @@ This image comes pre-installed with the standard stack required for modern Larav
 - **Version:** PHP 8.4 FPM
 - **Memory Limit:** 1024M
 - **Extensions Installed:**
-    - `pdo_mysql`
-    - `gd` (with JPEG & Freetype support)
-    - `mbstring`
-    - `bcmath`
-    - `xml`
-    - `zip`
-    - `pcntl`
-    - `opcache` (with JIT enabled)
-    - `intl`
+    - `pdo_mysql` - MySQL database support
+    - `gd` - Image processing with JPEG & Freetype support
+    - `mbstring` - Multibyte string support
+    - `bcmath` - Arbitrary precision arithmetic
+    - `xml` - XML parsing
+    - `zip` - ZIP file handling
+    - `pcntl` - Process control
+    - `opcache` - Opcode caching with JIT enabled
+    - `intl` - Internationalization support
 
 ### ⚡ Performance Optimizations
 
@@ -44,12 +45,14 @@ This image comes pre-installed with the standard stack required for modern Larav
     - Start servers: 5
     - Min/Max spare servers: 5/10
     - Request terminate timeout: 60s
+- **Build Optimization:** Multi-stage build process to remove build dependencies and minimize final image size
 
-### 📦 Dependencies & Tools
+### 📦 Included Tools & Libraries
 
 - **Composer:** Latest version (v2.x) from official image
-- **System Tools:** `git`, `curl`, `zip`, `unzip`
-- **Development Libraries:** PNG, XML, Freetype, JPEG, ICU support
+- **System Tools:** `git`, `curl`, `zip`, `unzip`, `bash`
+- **Runtime Libraries:** Freetype, libjpeg-turbo, libpng, ICU, Oniguruma, libzip
+- **Minimal Footprint:** Build dependencies are removed after compilation
 
 ---
 
@@ -81,11 +84,11 @@ CMD ["php-fpm"]
 
 ### Example with Frontend Build (Node.js)
 
-If you need Node.js and npm for frontend building, add your own Node.js setup:
+If you need Node.js and npm for frontend building, use a multi-stage build:
 
 ```dockerfile
 # Multi-stage build with Node.js
-FROM node:20-bookworm as frontend
+FROM node:20-alpine as frontend
 WORKDIR /build
 COPY . .
 RUN npm install && npm run build
@@ -116,7 +119,20 @@ This base image is perfect for:
 - ✅ Traditional Laravel applications with server-side rendering
 - ✅ Applications requiring specific PHP extensions
 - ✅ Production deployments with optimized FPM configuration
-- ⚠️ Frontend-heavy applications (consider adding Node.js in a multi-stage build)
+- ✅ Containerized deployments where image size matters
+- ⚠️ Applications with strict musl libc requirements (most are compatible)
+
+---
+
+## 📋 Image Size Benefits
+
+By using Alpine Linux instead of Debian, this image provides:
+
+- **Minimal base size** - Significantly smaller than Debian-based PHP images
+- **Faster downloads** - Quicker pulls from container registries
+- **Reduced storage** - Less disk space required on container hosts
+- **Faster startup** - Quick container initialization
+- **Production-ready** - Alpine is widely used in production environments
 
 ---
 
@@ -126,6 +142,14 @@ The image includes the following pre-configured files:
 
 - **`fpm-production.conf`** - Optimized PHP-FPM worker process configuration
 - **`opcache.ini`** - OPCache settings with JIT compilation enabled
+
+---
+
+## ⚠️ Compatibility Notes
+
+- **Alpine Linux uses musl libc** instead of glibc - Most PHP extensions and applications work seamlessly, but some binary-dependent packages may require testing
+- **No system package manager** pre-installed in final image - Keep your Dockerfile lean and efficient
+- **Some tools unavailable** - Common Linux tools available in Debian may not be in Alpine (e.g., curl, git are included, but others may need to be added)
 
 ---
 
